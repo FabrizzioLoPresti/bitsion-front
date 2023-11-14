@@ -6,10 +6,10 @@ import { cookies } from 'next/headers'
 import { redirect } from "next/navigation"
 
 export const addCliente = async (formData: FormData, id: number | undefined) => {
-  // const cookieStore = cookies()
-  // const token = cookieStore.get('token')
+  const token = cookies().get('token')?.value
+  console.log( token )
 
-  // if(!token || cookieStore.has('token')) return
+  if(!token) return
 
   const nombrecompleto = formData.get('nombrecompleto') as string
   const edad = formData.get('edad') as string
@@ -41,8 +41,9 @@ export const addCliente = async (formData: FormData, id: number | undefined) => 
       body: JSON.stringify(cliente),
       headers: {
         'Content-type': 'application/json',
-        // 'Authorization': `Bearer ${token.value}`
-      }
+        'Authorization': `Bearer ${token}`
+      },
+      cache: 'no-cache'
     })
 
     if(response.ok) {
@@ -54,8 +55,9 @@ export const addCliente = async (formData: FormData, id: number | undefined) => 
       body: JSON.stringify(cliente),
       headers: {
         'Content-type': 'application/json',
-        // 'Authorization': `Bearer ${token.value}`
-      }
+        'Authorization': `Bearer ${token}`
+      },
+      cache: 'no-cache'
     })
 
     if(response.ok) {
@@ -90,13 +92,46 @@ export const createSession = async (formData: FormData) => {
     body: JSON.stringify({ nombrecompleto }),
     headers: {
       'Content-type': 'application/json'
-    }
+    },
+    cache: 'no-cache'
   })
 
   const { access_token: token } = await response.json()
   
   if(token) {
-    cookies().set('token', token)
+    cookies().set('token', token, {
+      expires: new Date(Date.now() + 60 * 60 * 1000),
+      httpOnly: true,
+      maxAge: 60 * 60,
+      name: 'token',
+      path: '/',
+      value: token
+    })
     redirect('/')
   }
+}
+
+export const getProfile = async () => {
+  const token = cookies().get('token')?.value
+
+  if(!token) {
+    return
+  }
+
+  const response = await fetch(`${process.env.NEXT_BACKEND_URL}/auth/profile`, {
+    method: 'GET',
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    cache: 'no-cache'
+  })
+
+  const { username } = await response.json()
+
+  return username
+}
+
+export const deleteSession = async () => {
+  cookies().set('token', '', { expires: new Date(0) });
 }

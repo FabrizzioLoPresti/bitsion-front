@@ -78,9 +78,7 @@ const ComposePost = ({ cliente }: Props) => {
           id="maneja"
           defaultValue={cliente?.maneja ? 'true' : 'false'}
         >
-          <option value="" selected>
-            -
-          </option>
+          <option value="">-</option>
           <option value="true">Si</option>
           <option value="false">No</option>
         </select>
@@ -93,9 +91,7 @@ const ComposePost = ({ cliente }: Props) => {
           id="lentes"
           defaultValue={cliente?.lentes ? 'true' : 'false'}
         >
-          <option value="" selected>
-            -
-          </option>
+          <option value="">-</option>
           <option value="true">Si</option>
           <option value="false">No</option>
         </select>
@@ -108,9 +104,7 @@ const ComposePost = ({ cliente }: Props) => {
           id="diabetico"
           defaultValue={cliente?.diabetico ? 'true' : 'false'}
         >
-          <option value="" selected>
-            -
-          </option>
+          <option value="">-</option>
           <option value="true">Si</option>
           <option value="false">No</option>
         </select>
@@ -131,7 +125,7 @@ const ComposePost = ({ cliente }: Props) => {
         type="submit"
         className="bg-green-500 rounded-md px-4 py-2 w-fit self-center"
       >
-        Crear cliente
+        {cliente ? 'Actualizar cliente' : 'Crear cliente'}
       </button>
     </form>
   );
