@@ -67,16 +67,30 @@ export const addCliente = async (formData: FormData, id: number | undefined) => 
 }
 
 export const deleteCliente = async (id: number) => {
-  const response = await fetch(`${process.env.NEXT_BACKEND_URL}/clientes/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-type': 'application/json',
-      // "Authorization": `Bearer ${cookies().get('token')?.value}`
+  try {
+    const response = await fetch(`${process.env.NEXT_BACKEND_URL}/clientes/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${cookies().get('token')?.value}`
+      }
+    })
+  
+    if(response.ok) {
+      return revalidateTag('posts')
     }
-  })
 
-  if(response.ok) {
-    revalidateTag('posts')
+    switch(response.status) {
+      case 401:
+        return response.statusText
+      case 500:
+        const {message} = await response.json()
+        return message
+      default:
+        return 'Error'
+    }
+  } catch (error) {
+    console.log(error)
   }
 }
 

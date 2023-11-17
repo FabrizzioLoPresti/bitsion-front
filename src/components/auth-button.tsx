@@ -1,12 +1,26 @@
 import Link from 'next/link';
-import LogOutButton from './logout-button';
 import { cookies } from 'next/headers';
+import LogOutButton from './logout-button';
+import { getProfile } from '@/actions/actions';
 
 type Props = {};
 
-const AuthButton = (props: Props) => {
+const AuthButton = async (props: Props) => {
   const token = cookies().get('token');
-  return <>{token ? <LogOutButton /> : <Link href="/login">Acceder</Link>}</>;
+  const username = await getProfile();
+
+  return (
+    <>
+      {token ? (
+        <div className="flex flex-row gap-x-2">
+          <span className="text-white">| {username}</span>
+          <LogOutButton />
+        </div>
+      ) : (
+        <Link href="/login">Acceder</Link>
+      )}
+    </>
+  );
 };
 
 export default AuthButton;
